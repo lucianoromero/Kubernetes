@@ -1,0 +1,18 @@
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: workshop
+  labels:
+    name: workshop
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+  namespace: workshop
+  labels:
+    name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx

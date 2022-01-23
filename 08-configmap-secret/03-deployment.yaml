@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-deployment
+  labels:
+    app: springboot
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  replicas: 2
+  selector:
+    matchLabels:
+      app: springboot
+  template:
+    metadata:
+      labels:
+        app: springboot
+    spec:
+      containers:
+       - name: springboot-container
+         image: enomoto/spring-boot-ms:2.0
+         imagePullPolicy: Always
+         ports:
+           - containerPort: 8080
+         env:
+           - name: DB_HOST
+             valueFrom:
+               configMapKeyRef:
+                 key: DB_HOST
+                 name: springboot-config-map
+           - name: DB_PORT
+             valueFrom:
+               configMapKeyRef:
+                 key: DB_PORT
+                 name: springboot-config-map
+           - name: DB_USERNAME
+             valueFrom:
+               secretKeyRef:
+                 key: DB_USERNAME
+                 name: springboot-secret
+           - name: DB_PASSWORD
+             valueFrom:
+               secretKeyRef:
+                 key: DB_PASSWORD
+                 name: springboot-secret
+          # resources: # QoS Guaranteed limit e request iguais
+          #   limits:
+          #     cpu: 1000m
+          #     memory: 600Mi 
+          #   requests:
+          #     cpu: 1000m
+          #     memory: 600Mi                 
+                 

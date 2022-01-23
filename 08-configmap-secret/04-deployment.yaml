@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-deployment
+  labels:
+    app: springboot
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  replicas: 2
+  selector:
+    matchLabels:
+      app: springboot
+  template:
+    metadata:
+      labels:
+        app: springboot
+    spec:
+      containers:
+       - name: springboot-container
+         image: enomoto/spring-boot-ms:2.0
+         imagePullPolicy: Always
+         ports:
+           - containerPort: 8080
+         envFrom:
+         - configMapRef:
+             name: springboot-config-map
+         - secretRef:
+             name: springboot-secret
+         volumeMounts:
+         - name: springboot-config-map-volume
+           mountPath: "/home/springboot-ms/configs"
+         - name: springboot-secret-volume
+           mountPath: "/home/springboot-ms/secrets"
+           readOnly: true
+
+      volumes:
+        - name: springboot-config-map-volume
+          projected:
+            sources:          
+              - configMap:
+                  name: springboot-config-map
+        - name: springboot-secret-volume
+          projected:
+            sources:             
+              - secret:
+                  name: springboot-secret
+          # resources: # QoS Guaranteed limit e request iguais
+          #   limits:
+          #     cpu: 1000m
+          #     memory: 600Mi 
+          #   requests:
+          #     cpu: 1000m
+          #     memory: 600Mi                  
