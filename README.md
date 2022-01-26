@@ -1,4 +1,4 @@
-# k8s
+# Workshop Mão na Massa de Kubernetes para iniciantes
 Introduction Kubernetes
 
 Install -> Releases v1.23.2
